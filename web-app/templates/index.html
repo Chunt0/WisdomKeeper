@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Recorder</title>
+</head>
+<body>
+    <h1 id="question"></h1>
+    <button onclick="startRecording()">Start Recording</button>
+    <button onclick="stopRecording()" disabled>Stop Recording</button>
+    
+    <script>
+        const questions = [
+            "What is your favorite color?",
+            "What is your favorite hobby?",
+            // Add more questions here
+        ];
+        let currentQuestion = 0;
+        document.getElementById("question").textContent = questions[currentQuestion];
+
+        let mediaRecorder;
+        let chunks = [];
+
+        function startRecording() {
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.start();
+                    mediaRecorder.ondataavailable = event => {
+                        chunks.push(event.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(chunks, { type: 'audio/wav' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'recorded-question.wav';
+                        a.click();
+                    };
+                    document.querySelector("button[onclick='stopRecording()']").disabled = false;
+                });
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            chunks = [];
+            document.querySelector("button[onclick='stopRecording()']").disabled = true;
+            // Move to the next question or handle the end of questions
+        }
+    </script>
+</body>
+</html>
