@@ -10,44 +10,70 @@
     <h1 id="question"></h1>
     <button onclick="startRecording()">Start Recording</button>
     <button onclick="stopRecording()" disabled>Stop Recording</button>
+    <div id="recordingIndicator" style="width: 20px; height: 20px; background-color: grey;"></div>
     
     <script>
-        const questions = [
-            "What is your favorite color?",
-            "What is your favorite hobby?",
-            // Add more questions here
-        ];
         let currentQuestion = 0;
-        document.getElementById("question").textContent = questions[currentQuestion];
-
         let mediaRecorder;
         let chunks = [];
+        let questions = {{ questions|tojson|safe }};
+        
+        currentQuestion = findNextUnansweredQuestion(0);
 
-        function startRecording() {
-            navigator.mediaDevices.getUserMedia({ audio: true })
-                .then(stream => {
-                    mediaRecorder = new MediaRecorder(stream);
-                    mediaRecorder.start();
-                    mediaRecorder.ondataavailable = event => {
-                        chunks.push(event.data);
-                    };
-                    mediaRecorder.onstop = () => {
-                        const blob = new Blob(chunks, { type: 'audio/wav' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'recorded-question.wav';
-                        a.click();
-                    };
-                    document.querySelector("button[onclick='stopRecording()']").disabled = false;
-                });
+        document.getElementById("question").textContent = questions[currentQuestion];
+        
+        function findNextUnansweredQuestion(startIndex) {
+           for (let i = startIndex; i < questions.length; i++) {
+                if (questions[i][0] === '0') {
+                    return i; // Return index of the next unanswered question
+                }
+            }       
+            return -1; // All questions are answered
+        }
+
+        function moveNext() {
+            currentQuestion = findNextUnansweredQuestion(currentQuestion + 1);
+            if (currentQuestion !== -1) {
+                document.getElementById("question").textContent = questions[currentQuestion][1][1];
+            } else {
+                // Handle the end of questions
+            }
+        }
+
+        async function startRecording() {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+            mediaRecorder.onstop = download;
+            mediaRecorder.start();
+            document.querySelector("button[onclick='stopRecording()']").disabled = false;
+            document.getElementById("recordingIndicator").style.backgroundColor = "red"; // Change color when recording
         }
 
         function stopRecording() {
             mediaRecorder.stop();
-            chunks = [];
             document.querySelector("button[onclick='stopRecording()']").disabled = true;
-            // Move to the next question or handle the end of questions
+            document.getElementById("recordingIndicator").style.backgroundColor = "grey"; // Change color back when not recording
+        }
+
+        function download() {
+            const blob = new Blob(chunks, { type: 'audio/wav' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `question${currentQuestion}.wav`;
+            a.click();
+            // update the CSV, move to the next question
+            fetch('/update_question', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ index: currentQuestion }),
+            }).then(response => response.json())
+            .then(data => {
+                moveNext(); // Move to the next unanswered question
+            });
         }
     </script>
 </body>
