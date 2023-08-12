@@ -7,7 +7,7 @@ app = Flask(__name__)
 def get_questions():
     recorded = []
     questions = []
-    with open('../dataset/data.csv', 'r') as file:
+    with open('data.csv', 'r') as file:
         reader = csv.reader(file)
         for row in reader:
             recorded.append(row[0])
