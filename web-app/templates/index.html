@@ -7,10 +7,11 @@
     <title>Question Recorder</title>
 </head>
 <body>
+    <h1 id="recorded"></h1>
     <h1 id="question"></h1>
     <button onclick="startRecording()">Start Recording</button>
     <button onclick="stopRecording()" disabled>Stop Recording</button>
-    <button onclick="moveNext()"></button>
+    <button onclick="moveNext()">Next Questions</button>
     <div id="recordingIndicator" style="width: 20px; height: 20px; background-color: grey;"></div>
     
     <script>
@@ -22,6 +23,7 @@
         
         currentQuestion = findNextUnansweredQuestion(0);
 
+        document.getElementById("recorded").textContent = currentQuestion;
         document.getElementById("question").textContent = questions[currentQuestion];
         
         function findNextUnansweredQuestion(startIndex) {
@@ -36,8 +38,10 @@
         function moveNext() {
             currentQuestion = findNextUnansweredQuestion(currentQuestion + 1);
             if (currentQuestion !== -1) {
+                document.getElementById("recorded").textContent = currentQuestion;
                 document.getElementById("question").textContent = questions[currentQuestion];
             } else {
+                document.getElementById("recorded").textContent = "";
                 document.getElementById("question").textContent = "All questions have been answered.";
                 document.querySelector("button[onclick='startRecording()']").disabled = true;
                 document.querySelector("button[onclick='stopRecording()']").disabled = true;
