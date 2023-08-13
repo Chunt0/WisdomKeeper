@@ -12,17 +12,19 @@ def get_questions():
         for row in reader:
             recorded.append(row[0])
             questions.append(row[1])
+        recorded.pop(0)
+        questions.pop(0)
     return recorded, questions
 
 def update_question(index):
     # Read the CSV file into a DataFrame
-    df = pd.read_csv('../dataset/data.csv')
+    df = pd.read_csv('data.csv')
 
     # Update the specific cell
-    df.at[index-1, 'recorded'] = 1 # Replace 'column_name' with the name of the column you want to modify
+    df.at[index, 'recorded'] = 1 # Replace 'column_name' with the name of the column you want to modify
 
     # Write the DataFrame back to the CSV file
-    df.to_csv('../dataset/data.csv', index=False)
+    df.to_csv('data.csv', index=False)
 
 @app.route('/')
 def index():
