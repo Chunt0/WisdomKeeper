@@ -1,0 +1,50 @@
+To test the Android application on Ubuntu 22.04 using VS Code, you'll need to set up Android Studio and the Android Emulator. Here's a step-by-step guide to help you get started:
+
+Install Android Studio:
+Download and install Android Studio from the official website: https://developer.android.com/studio/install
+
+Set Up Android SDK:
+After installing Android Studio, open it and go through the initial setup process. Make sure to install the necessary Android SDK components, including the Android Emulator.
+
+Open Your Project in Android Studio:
+Open Android Studio and choose "Open an existing Android Studio project." Navigate to the directory where you saved your Android project and open it.
+
+Create an Android Virtual Device (AVD):
+To test your app, you'll need to create a virtual device using the Android Emulator. Follow these steps:
+
+Click on "Tools" > "AVD Manager" in the top menu.
+Click on the "Create Virtual Device" button.
+Select a device definition and click "Next."
+Choose a system image (preferably the latest version) and click "Next."
+Configure the AVD settings as needed and click "Finish."
+Configure VS Code for Android Development:
+You can use the "Android Code" extension for VS Code to simplify Android development. Install it by going to Extensions in VS Code and searching for "Android Code."
+
+Run Your App on the Emulator:
+Now you can run your app on the Android Emulator:
+
+In Android Studio, open your project and make sure it's synchronized.
+Open the terminal in VS Code.
+Navigate to your project's root directory.
+Run the following command to build and run the app on the emulator:
+bash
+Copy code
+./gradlew installDebug
+If the command fails, you might need to adjust the permissions of the gradlew script. Run the following command to make it executable:
+bash
+Copy code
+chmod +x gradlew
+Start the Emulator:
+Make sure your Android Emulator is running. You can start it from Android Studio's AVD Manager.
+
+Run Your App:
+Once the emulator is running, you can run your app:
+
+In VS Code's terminal, navigate to your project directory.
+Run the following command to install and launch your app:
+arduino
+Copy code
+flutter run
+This should launch your app on the Android Emulator, allowing you to test the functionality you've implemented.
+
+Remember that Android development can sometimes involve configuring different tools and dependencies. If you encounter any issues, refer to the official Android documentation or seek help from relevant communities to troubleshoot.
